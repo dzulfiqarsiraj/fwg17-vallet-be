@@ -1,7 +1,7 @@
 const db = require("../lib/db.lib")
 
-exports.allWallet = async() => {
-    const sql = `SELECT * FROM "wallet"`
+exports.allTestimony = async() => {
+    const sql = `SELECT * FROM "testimony"`
     const values = []
     const {rows} = await db.query(sql, values)
     return rows
