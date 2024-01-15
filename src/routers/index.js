@@ -1,6 +1,6 @@
 const router = require("express").Router()
-const authMiddleware = require('../middleware/auth.middleware')
-const roleCheckMiddleware = require('../middleware/roleCheck.middleware')
+// const authMiddleware = require('../middleware/auth.middleware')
+// const roleCheckMiddleware = require('../middleware/roleCheck.middleware')
 
 // End Point untuk cek Auth
 // router.use("/auth", require("./auth.router"))
