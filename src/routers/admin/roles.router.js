@@ -1,9 +1,11 @@
-const allRole = require('express').Router()
+const rolesRouter = require('express').Router()
 
-// controller
+const rolesController = require('../../controllers/admin/roles.controller')
 
+rolesRouter.get('/', rolesController.getAll)
+rolesRouter.get('/:id', rolesController.detail)
+rolesRouter.post('/', rolesController.create)
+rolesRouter.patch('/:id', rolesController.update)
+rolesRouter.delete('/:id', rolesController.delete)
 
-// end point
-
-
-module.exports = allRole
+module.exports = rolesRouter
