@@ -36,14 +36,14 @@ exports.findOne = async (id)=>{
   return rows[0]
 }
 
-exports.insert = async (data1, data2)=>{
+exports.insert = async (colName, colValues)=>{
   const col = []
   const values = []
   const dollar = []
 
-  for(let i = 0; i < data1.length; i++){
-    col.push(data1[i])
-    values.push(data2[i])
+  for(let i = 0; i < colName.length; i++){
+    col.push(colName[i])
+    values.push(colValues[i])
     
     dollar.push(`$${values.length}`)
   }
@@ -54,14 +54,14 @@ exports.insert = async (data1, data2)=>{
 }
 
 
-exports.update = async (id, data1, data2)=>{
+exports.update = async (id, colName, colValues)=>{
   const col = []
   const values = [] 
   values.push(id)
 
-  for(let i = 0; i < data1.length; i++){
-    col.push(data1[i])
-    values.push(data2[i])
+  for(let i = 0; i < colName.length; i++){
+    col.push(colName[i])
+    values.push(colValues[i])
     
     // dollar.push(`$${values.length}`)
   }
