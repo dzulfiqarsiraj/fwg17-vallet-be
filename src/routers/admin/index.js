@@ -1,5 +1,6 @@
 const adminRouter = require('express').Router()
 
-// end point
+adminRouter.use('/roles', require('./roles.router'))
+adminRouter.use('/users', require('./users.router'))
 
 module.exports = adminRouter
