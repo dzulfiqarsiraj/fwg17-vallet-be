@@ -44,20 +44,19 @@ exports.findOneByEmail = async (email)=>{
   return rows[0]
 }
 
-exports.insert = async (data1, data2)=>{
+exports.insert = async (data)=>{
   const col = []
   const values = []
-  const dollar = []
 
-  for(let i = 0; i < data1.length; i++){
-    col.push(data1[i])
-    values.push(data2[i])
-    
-    dollar.push(`$${values.length}`)
+  let i = 0;
+  for(keys in data){
+    col[i] = `"${keys}"`
+    values[i] = `'${data[keys]}'`
+    i++
   }
 
-  const sql = `INSERT INTO "users" (${col.join(', ')}) VALUES (${dollar.join(', ')}) RETURNING *`
-  const {rows} = await db.query(sql,values)
+  const sql = `INSERT INTO "users" (${col.join(', ')}) VALUES (${values.join(', ')}) RETURNING *`
+  const {rows} = await db.query(sql)
   return rows[0]
 }
 
