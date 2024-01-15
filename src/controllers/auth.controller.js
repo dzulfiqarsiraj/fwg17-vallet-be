@@ -9,7 +9,7 @@ exports.login = async (req,res) => {
     const password = await argon.verify(user.password, req.body.password)
     const token = jwt.sign({
       id: user.id
-    })
+    }, process.env.APP_SECRET || 'secret')
     if(password){
       return res.json({
         success: true,
@@ -31,5 +31,10 @@ exports.login = async (req,res) => {
         message: 'wrong email or password'
       })
     }
+    console.error(err)
+    return res.status(500).json({
+      success: false,
+      message: 'internal server error'
+    })
   }
 }
