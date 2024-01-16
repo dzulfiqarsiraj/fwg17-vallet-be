@@ -33,11 +33,11 @@ exports.createTransactionTypes = async(name) => {
     const sql = `INSERT INTO "transactionTypes" ("name") VALUES ($1) RETURNING *`
     const values = [name]
     const {rows} = await db.query(sql, values)
-    return rows
+    return rows[0]
 }
 
 
-// CREATE DATA
+// UPDATE DATA
 exports.updateTransactionTypes = async(id, name) => {
     const sql = `
     UPDATE "transactionTypes" 
@@ -46,7 +46,7 @@ exports.updateTransactionTypes = async(id, name) => {
     RETURNING *`
     const values = [id, name]
     const {rows} = await db.query(sql, values)
-    return rows
+    return rows[0]
 }
 
 
@@ -55,5 +55,5 @@ exports.deleteTransactionTypes = async(id) => {
     const sql = `DELETE FROM "transactionTypes" WHERE "id"= $1 RETURNING *`
     const values = [id]
     const {rows} = await db.query(sql, values)
-    return rows
+    return rows[0]
 }
