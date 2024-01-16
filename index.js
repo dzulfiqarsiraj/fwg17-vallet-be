@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
     })
 })
 
-// app.use('/', require('./src/routers/index'))
+app.use('/', require('./src/routers/index'))
 
 // Respons bila link yg input tidak ada
 app.use('/', (reg, res)=>{
