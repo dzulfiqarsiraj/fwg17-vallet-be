@@ -7,11 +7,35 @@ const handleErr = require("../../helpers/utils")
 // SELECT *
 exports.getAllData = async(req, res) => {
     try{
-        const getTestimony = await testimonyModel.allTestimony()
+        const { filter, sortby, order, page = 1, limits = 6 } = req.query
+        const countData = await testimonyModel.countData(filter)
+
+        const getTestimony = await testimonyModel.allTestimony(
+            filter,
+            sortby,
+            order,
+            page,
+            limits
+        )
+
+        if(getTestimony.length < 1){
+            throw ({code: "THROW", message: "No Data!"})
+        }
+
+        const totalPage = Math.ceil(countData / limits)
+        const nextPage = Number(page) + 1
+        const prevPage = Number(page) - 1
     
         return res.json({
             success: true,
             message: 'List all Testimony',
+            pageInfo: {
+                currentPage: Number(page),
+                totalPage,
+                nextPage: nextPage <= totalPage ? nextPage : null,
+                prevPage: prevPage >= 1 ? prevPage : null,
+                totalData: Number(countData)
+            },
             results:getTestimony
         })
     } catch(err){
