@@ -37,8 +37,10 @@ exports.findOne = async (id)=>{
 }
 
 exports.findOneByEmail = async (email)=>{
-  const sql = `SELECT *
-  FROM "users" WHERE "email" = $1`
+  const sql = `select "email", "password", "roleId", "name" as "roleName"
+  from users
+  join "roles" "r" on "users"."roleId" = "r"."id"
+  where "email" = $1`
   const values = [email]
   const {rows} = await db.query(sql,values)
   return rows[0]

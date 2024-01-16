@@ -2,13 +2,16 @@ const usersModel = require('../models/users.model')
 const argon = require('argon2')
 const jwt = require('jsonwebtoken')
 
+const handleErr = require('../helpers/utils')
+
 exports.login = async (req,res) => {
   try{
     const user = await usersModel.findOneByEmail(req.body.email)
   if(user){
     const password = await argon.verify(user.password, req.body.password)
     const token = jwt.sign({
-      id: user.id
+      id: user.id,
+      role: user.roleName
     }, process.env.APP_SECRET || 'secret')
     if(password){
       return res.json({
@@ -31,19 +34,25 @@ exports.login = async (req,res) => {
         message: 'wrong email or password'
       })
     }
-    console.error(err)
-    return res.status(500).json({
-      success: false,
-      message: 'internal server error'
-    })
+    handleErr.outError(err, res)
   }
 }
 
 exports.register = async (req, res)=>{
   try{
-    const {email, password, fullName} = req.body
-    const hash = await argon.hash(password)
-    const user = await usersModel.insert({email, password: hash, fullName})
+    if(req.body.password){
+      req.body.password = await argon.hash(req.body.password)
+    }
+
+    const col = []
+    const values = []
+
+    for(let i in req.body){
+      values.push(req.body[i])
+      col.push(`"${i}"`)
+    }
+
+    const user = await usersModel.insert(col, values)
     if(user){
       return res.json({
         success: true,
@@ -59,10 +68,6 @@ exports.register = async (req, res)=>{
         message: 'Register failed'
       })
     }
-    console.error(err)
-    return res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    })
+    handleErr.outError(err, res)
   }
 }
