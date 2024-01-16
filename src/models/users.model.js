@@ -44,37 +44,38 @@ exports.findOneByEmail = async (email)=>{
   return rows[0]
 }
 
-exports.insert = async (data)=>{
+exports.insert = async (colName, colValues)=>{
   const col = []
   const values = []
+  const dollar = []
 
-  let i = 0;
-  for(keys in data){
-    col[i] = `"${keys}"`
-    values[i] = `'${data[keys]}'`
-    i++
+  for(let i = 0; i < colName.length; i++){
+    col.push(colName[i])
+    values.push(colValues[i])
+
+    dollar.push($${values.length})
   }
 
-  const sql = `INSERT INTO "users" (${col.join(', ')}) VALUES (${values.join(', ')}) RETURNING *`
-  const {rows} = await db.query(sql)
+  const sql = INSERT INTO "users" (${col.join(', ')}) VALUES (${dollar.join(', ')}) RETURNING *
+  const {rows} = await db.query(sql,values)
   return rows[0]
 }
 
 
-exports.update = async (id, data1, data2)=>{
+exports.update = async (id, colName, colValues)=>{
   const col = []
   const values = [] 
   values.push(id)
 
-  for(let i = 0; i < data1.length; i++){
-    col.push(data1[i])
-    values.push(data2[i])
-    
-    // dollar.push(`$${values.length}`)
+  for(let i = 0; i < colName.length; i++){
+    col.push(colName[i])
+    values.push(colValues[i])
+
+    // dollar.push($${values.length})
   }
 
-  const sql = `UPDATE "users" SET ${col.join(', ')}, "updatedAt" = now() WHERE "id" = $1 
-  RETURNING *`
+  const sql = UPDATE "users" SET ${col.join(', ')}, "updatedAt" = now() WHERE "id" = $1 
+  RETURNING *
   const {rows} = await db.query(sql,values)
   return rows[0] 
 }
