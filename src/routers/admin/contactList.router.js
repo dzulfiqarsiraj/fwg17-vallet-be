@@ -1,9 +1,11 @@
-const allContactList = require('express').Router()
+const contactListRouter = require('express').Router()
 
-// controller
+const contactListController = require('../../controllers/admin/contactList.controller')
 
+contactListRouter.get('/', contactListController.getAll)
+contactListRouter.get('/:id', contactListController.detail)
+contactListRouter.post('/', contactListController.create)
+contactListRouter.patch('/:id', contactListController.update)
+contactListRouter.delete('/:id', contactListController.delete)
 
-// end point
-
-
-module.exports = allContactList
+module.exports = contactListRouter
