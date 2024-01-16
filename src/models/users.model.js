@@ -53,10 +53,10 @@ exports.insert = async (colName, colValues)=>{
     col.push(colName[i])
     values.push(colValues[i])
 
-    dollar.push($${values.length})
+    dollar.push(`$${values.length}`)
   }
 
-  const sql = INSERT INTO "users" (${col.join(', ')}) VALUES (${dollar.join(', ')}) RETURNING *
+  const sql = `INSERT INTO "users" (${col.join(', ')}) VALUES (${dollar.join(', ')}) RETURNING *`
   const {rows} = await db.query(sql,values)
   return rows[0]
 }
@@ -74,8 +74,8 @@ exports.update = async (id, colName, colValues)=>{
     // dollar.push($${values.length})
   }
 
-  const sql = UPDATE "users" SET ${col.join(', ')}, "updatedAt" = now() WHERE "id" = $1 
-  RETURNING *
+  const sql = `UPDATE "users" SET ${col.join(', ')}, "updatedAt" = now() WHERE "id" = $1
+  RETURNING *`
   const {rows} = await db.query(sql,values)
   return rows[0] 
 }
