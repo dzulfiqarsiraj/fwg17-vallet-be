@@ -3,7 +3,7 @@ const db = require("../lib/db.lib")
 
 // SELECT *
 exports.allTestimony = async(filter='', sortby, order, page, limits) => {
-    const visibleColumn = ["id, rating", "review"]
+    const visibleColumn = ["id", "rating", "review"]
     const allowOrder = ['asc', 'desc']
 
     const offset = (page - 1) * limits
