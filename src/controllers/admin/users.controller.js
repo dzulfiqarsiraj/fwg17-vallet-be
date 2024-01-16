@@ -120,6 +120,10 @@ exports.create = async (req,res) => {
 exports.update = async (req,res) => {
   const {id} = req.params
   try {
+    if(req.body.password){
+      req.body.password = await argon.hash(req.body.password)
+    }
+    
     const col = []
     const values = [] 
     // values.push(Number(id))
