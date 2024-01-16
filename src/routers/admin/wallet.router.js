@@ -1,9 +1,11 @@
-const allWallet = require('express').Router()
+const walletRouter = require('express').Router()
 
-// controller
+const walletController = require('../../controllers/admin/wallet.controller')
 
+walletRouter.get('/', walletController.getAll)
+walletRouter.get('/:id', walletController.getDetailWallet)
+walletRouter.post('/', walletController.createWallet)
+walletRouter.patch('/:id', walletController.updateWallet)
+walletRouter.delete('/:id', walletController.deleteWallet)
 
-// end point
-
-
-module.exports = allWallet
+module.exports = walletRouter
