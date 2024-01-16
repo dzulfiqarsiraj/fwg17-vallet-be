@@ -8,9 +8,12 @@ const handleErr = require("../../helpers/utils")
 // SELECT *
 exports.getAllData = async(req, res) => {
     try{
-        // console.log(req.user)
         const {id} = req.user
-        const getContactList = await contactListModel.allContactListforCustomer(id)
+        const { search='' } = req.query
+        const getContactList = await contactListModel.allContactListforCustomer(id, search)
+        if(getContactList.length < 1){
+            throw ({code: "THROW", message: "No Data!"})
+        }
 
         return res.json({
             success: true,
