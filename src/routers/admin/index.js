@@ -5,5 +5,6 @@ adminRouter.use('/users', require('./users.router'))
 adminRouter.use('/contact-list', require('./contactList.router'))
 adminRouter.use('/wallet', require('./wallet.router'))
 adminRouter.use('/transaction-types', require('./transactionTypes.router'))
+adminRouter.use('/testimony', require('./testimony.router'))
 
 module.exports = adminRouter
