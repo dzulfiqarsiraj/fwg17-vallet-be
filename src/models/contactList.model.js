@@ -86,3 +86,17 @@ exports.countAll = async ()=>{
   const {rows} = await db.query(sql,values)
   return rows[0].counts
 }
+
+
+// CUSTOMER
+exports.allContactListforCustomer = async(id) => {
+  const sql = `
+  SELECT "u"."picture", "u"."fullName", "u"."phoneNumber", "cl"."isFavorite" 
+  FROM "contactList" "cl"
+  INNER JOIN "users" "u" ON "u"."id" = "cl"."contactId"
+  WHERE "userId"=$1
+  `
+  const values = [id]
+  const {rows} = await db.query(sql,values)
+  return rows
+}

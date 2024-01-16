@@ -37,8 +37,8 @@ exports.findOne = async (id)=>{
 }
 
 exports.findOneByEmail = async (email)=>{
-  const sql = `select "email", "password", "roleId", "name" as "roleName"
-  from users
+  const sql = `select "users"."id" as "userId", "email", "password", "roleId", "name" as "roleName"
+  from "users" 
   join "roles" "r" on "users"."roleId" = "r"."id"
   where "email" = $1`
   const values = [email]
