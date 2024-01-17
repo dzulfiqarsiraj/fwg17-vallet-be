@@ -18,14 +18,14 @@ exports.createTransfer = async (req, res) => {
     
     const totalSender = findWalletSender.balance - transfer.amount
 
-    const senderWallet = await walletModel.updateTransfer(transfer.senderId, totalSender)
+    const senderWallet = await walletModel.updateByUserId(transfer.senderId, totalSender)
 
     //add balance to recipient
     const findWalletRecipient = await walletModel.findOneByUserId(transfer.recipientId)
 
     const totalRecipient = transfer.amount + findWalletRecipient.balance
 
-    const recipientwallet = await walletModel.updateTransfer(transfer.recipientId, totalRecipient)
+    const recipientwallet = await walletModel.updateByUserId(transfer.recipientId, totalRecipient)
 
     
     
