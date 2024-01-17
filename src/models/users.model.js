@@ -115,3 +115,25 @@ exports.countAll = async (keyword='')=>{
   const {rows} = await db.query(sql,values)
   return rows[0].counts
 }
+
+
+exports.updateProfile = async (id, data) => {
+    const column = []
+    const values = []
+    values.push(id)
+    for(let item in data){
+        if(data[item]) {
+            values.push(data[item])
+            column.push(`"${item}"=$${values.length}`)
+        }
+    }
+
+    const sql = `
+    UPDATE "users"
+    SET ${column.join(", ")}, "updatedAt"=now()
+    WHERE "id"= $1
+    RETURNING *
+    `
+    const {rows} = await db.query(sql, values)
+    return rows[0]
+}

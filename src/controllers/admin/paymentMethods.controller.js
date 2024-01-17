@@ -56,10 +56,10 @@ exports.createPaymentMethod = async (req, res) => {
 			
 			if(req.file){
 				const extension = {
-          'image/png' : '.png',
-          'image/jpg' : '.jpg',
-          'image/jpeg' : '.jpeg',
-        }
+			'image/png' : '.png',
+			'image/jpg' : '.jpg',
+			'image/jpeg' : '.jpeg',
+			}
 
 				const uploadLocation = path.join(global.path, 'uploads','paymentMethods')
 				const fileLocation = path.join(uploadLocation, req.file.filename)
