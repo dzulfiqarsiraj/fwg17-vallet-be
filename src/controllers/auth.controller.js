@@ -10,7 +10,7 @@ exports.login = async (req,res) => {
   if(user){
     const password = await argon.verify(user.password, req.body.password)
     const token = jwt.sign({
-      id: user.id,
+      id: user.userId,
       role: user.roleName
     }, process.env.APP_SECRET || 'secret')
     if(password){
