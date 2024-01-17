@@ -1,5 +1,4 @@
-const contactListModel = require('../../models/contactList.model')
-
+const historyTransactionsModel = require("../../models/historyTransactions.model")
 
 // hendle semua error yg terjadi di catch
 const handleErr = require("../../helpers/utils")
@@ -9,15 +8,14 @@ const handleErr = require("../../helpers/utils")
 exports.getAllData = async(req, res) => {
     try{
         const {id} = req.user
-        const { search='' } = req.query
-        const getContactList = await contactListModel.allContactListforCustomer(id, search)
+        const getContactList = await historyTransactionsModel.allHistoryTransactions(id)
         if(getContactList.length < 1){
             throw ({code: "THROW", message: "No Data!"})
         }
 
         return res.json({
             success: true,
-            message: 'List all Contact List!',
+            message: 'List all History Transactions!',
             results: getContactList
         })
 
