@@ -99,3 +99,31 @@ exports.verifyPin = async (req,res) => {
     handleErr.outError(err, res)
   }
 }
+
+exports.verifyPassword = async (req,res) => {
+  try{
+    const {id} = req.params
+    const user = await usersModel.findOne(id)
+  if(user){
+    const password = await argon.verify(user.password, req.body.password)
+    if(password){
+      return res.json({
+        success: true,
+        message: 'Password Correct'
+      })
+    }else{
+      throw 'wrong_password'
+    }
+  }else{
+    throw 'wrong_password'
+  }
+  }catch(err){
+    if(err === 'wrong_password'){
+      return res.status(401).json({
+        success: false,
+        message: 'wrong email or password'
+      })
+    }
+    handleErr.outError(err, res)
+  }
+}
