@@ -33,6 +33,10 @@ exports.insert = async (data) => {
   RETURNING *
   `
 
+  if(!data.note){
+    data.note = null
+  }
+
   const values = [data.amount, data.senderId, data.recipientId, data.note]
   const {rows} = await db.query(sql, values)
   return rows[0]

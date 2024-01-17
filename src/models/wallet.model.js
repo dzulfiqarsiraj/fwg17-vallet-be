@@ -23,7 +23,7 @@ exports.findOneById = async(id) => {
 
 exports.findOneByUserId = async(id) => {
   const sql = `
-  SELECT * 
+  SELECT "balance", "id"
   FROM "wallet"
   WHERE "userId" = $1 
   `
@@ -68,6 +68,7 @@ exports.update = async (id, data) => {
   const {rows} = await db.query(sql, values)
   return rows[0]
 }
+
 
 exports.updateByUserId = async (id, data) => {
   const values = [id, data]
