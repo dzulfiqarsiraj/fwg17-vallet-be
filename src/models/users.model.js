@@ -28,6 +28,7 @@ exports.findAll = async (keyword='', sortBy='id', order, page=1)=>{
   return rows
 }
 
+
 exports.findOne = async (id)=>{
   const sql = `SELECT *
   FROM "users" WHERE "id" = $1`
@@ -36,8 +37,24 @@ exports.findOne = async (id)=>{
   return rows[0]
 }
 
+exports.findOneProfile = async (id)=>{
+  const sql = `SELECT "fullName", "phoneNumber", "email", "isVerified", "id"
+  FROM "users" WHERE "id" = $1`
+  const values = [id]
+  const {rows} = await db.query(sql,values)
+  return rows[0]
+}
+
+exports.findPassword = async (id)=>{
+  const sql = `SELECT "password"
+  FROM "users" WHERE "id" = $1`
+  const values = [id]
+  const {rows} = await db.query(sql,values)
+  return rows[0]
+}
+
 exports.findOneByEmail = async (email)=>{
-  const sql = `select "email", "password", "roleId", "name" as "roleName"
+  const sql = `select "users"."id" as "userId", "email", "password", "roleId", "name" as "roleName"
   from users
   join "roles" "r" on "users"."roleId" = "r"."id"
   where "email" = $1`
