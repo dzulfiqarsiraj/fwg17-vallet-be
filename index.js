@@ -15,8 +15,8 @@ app.use(express.urlencoded({extended: false}))
 app.use(morgan("dev")) // untuk login akses
 app.use(cors()) // untuk memperbolehkan frontend mengakses BackEnd kita, jika tidak di berikan cors nanti tidak bisa aplikasi frontend kita mengakses back end nya.
 
-app.use('/uploads/products', express.static('uploads/products'))
-app.use('/uploads/profile', express.static('uploads/users'))
+app.use('/uploads/paymentMethods', express.static('uploads/paymentMethods'))
+app.use('/uploads/profiles', express.static('uploads/profiles'))
 
 // Cek apakah link utama berjalan
 app.get('/', (req, res) => {
