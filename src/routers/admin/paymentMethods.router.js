@@ -1,6 +1,8 @@
 const paymentMethodRouter = require('express').Router()
 const paymentMethodController = require('../../controllers/admin/paymentMethods.controller')
 
+const uploadMiddleware = require('../../middleware/upload.middleware')
+
 paymentMethodRouter.get('/', paymentMethodController.getAll)
 paymentMethodRouter.get('/:id', paymentMethodController.getDetailPaymentMethod)
 paymentMethodRouter.post('/', paymentMethodController.createPaymentMethod)
