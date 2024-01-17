@@ -71,3 +71,31 @@ exports.register = async (req, res)=>{
     handleErr.outError(err, res)
   }
 }
+
+exports.verifyPin = async (req,res) => {
+  try{
+    const {id} = req.params
+    const user = await usersModel.findOne(id)
+  if(user){
+    const pin = await argon.verify(user.pin, req.body.pin)
+    if(pin){
+      return res.json({
+        success: true,
+        message: 'Transfer Success'
+      })
+    }else{
+      throw 'wrong_pin'
+    }
+  }else{
+    throw 'wrong_pin'
+  }
+  }catch(err){
+    if(err === 'wrong_pin'){
+      return res.status(401).json({
+        success: false,
+        message: 'wrong email or pin'
+      })
+    }
+    handleErr.outError(err, res)
+  }
+}
