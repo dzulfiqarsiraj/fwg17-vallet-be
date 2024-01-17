@@ -66,6 +66,10 @@ exports.create = async (req,res) => {
       req.body.password = await argon.hash(req.body.password)
     }
 
+    if(req.body.pin){
+      req.body.pin = await argon.hash(req.body.pin)
+    }
+    
     if(req.file){
       req.body.picture = req.file.filename
     }
@@ -122,6 +126,11 @@ exports.update = async (req,res) => {
   try {
     if(req.body.password){
       req.body.password = await argon.hash(req.body.password)
+    }
+
+    
+    if(req.body.pin){
+      req.body.pin = await argon.hash(req.body.pin)
     }
     
     const col = []
