@@ -6,5 +6,6 @@ const roleCheckMiddleware = require('../middleware/roleCheck.middleware')
 router.use('/admin', authMiddleware, roleCheckMiddleware('admin'), require('./admin'))
 router.use('/customer', authMiddleware, require('./customers'))
 router.use('/auth', require('./auth.router'))
+router.use("/testimony", require("../routers/admin/testimony.router"))
 
 module.exports = router

@@ -12,10 +12,15 @@ exports.allTestimony = async(filter='', sortby, order, page, limits) => {
     order = allowOrder.includes(order) ? order : 'asc'
 
     const sql = `
-    SELECT * 
-    FROM "testimony"
-    WHERE "review" ILIKE $1
-    ORDER BY "${sortby}" ${order}
+    SELECT 
+    "u"."picture",
+    "u"."fullName",
+    "t"."rating",
+    "t"."review"
+    FROM "testimony" "t"
+    INNER JOIN "users" "u" ON "u"."id" = "t"."userId"
+    WHERE "t"."review" ILIKE $1
+    ORDER BY "t"."${sortby}" ${order}
     LIMIT ${limits}
     OFFSET ${offset}
     `
