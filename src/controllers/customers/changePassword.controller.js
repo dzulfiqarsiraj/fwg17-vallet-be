@@ -2,26 +2,6 @@ const userModel = require('../../models/users.model')
 const argon = require('argon2')
 const handleErr = require('../../helpers/utils')
 
-exports.getPassword = async (req, res) => {
-  const {id} = req.params
-  const users = await userModel.findPassword(id)
-
-  if(!users){
-    return res.status(404).json({
-      success: false,
-      message: `users not found`,
-    })
-  }
-
-  return res.json({
-    success: true,
-    message: `Detail users`,
-    results: users
-  })
-
-}
-
-
 exports.updatePassword = async (req,res) => {
   const {id} = req.params
   try {
