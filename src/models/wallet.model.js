@@ -21,6 +21,17 @@ exports.findOneById = async(id) => {
   return rows[0]
 }
 
+exports.findOneByUserId = async(id) => {
+  const sql = `
+  SELECT "balance"
+  FROM "wallet"
+  WHERE "userId" = $1 
+  `
+  const values = [id]
+  const {rows} = await db.query(sql, values)
+  return rows[0]
+}
+
 exports.insert = async (data) => {
   
   const sql = 
@@ -51,6 +62,21 @@ exports.update = async (id, data) => {
   UPDATE "wallet"
   SET ${column.join(', ')}, "updatedAt" = now()
   WHERE "id"=$1
+  RETURNING *
+  `
+
+  const {rows} = await db.query(sql, values)
+  return rows[0]
+}
+
+exports.updateTransfer = async (id, data) => {
+  const values = [id, data]
+
+  const sql = 
+  `
+  UPDATE "wallet"
+  SET "balance" = $2, "updatedAt" = now()
+  WHERE "userId"=$1
   RETURNING *
   `
 
