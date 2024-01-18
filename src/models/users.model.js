@@ -38,7 +38,7 @@ exports.findOne = async (id)=>{
 }
 
 exports.findOneProfile = async (id)=>{
-  const sql = `SELECT "fullName", "phoneNumber", "email", "isVerified", "id"
+  const sql = `SELECT "fullName", "phoneNumber", "email", "isVerified", "id", "picture"
   FROM "users" WHERE "id" = $1`
   const values = [id]
   const {rows} = await db.query(sql,values)
