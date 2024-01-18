@@ -1,7 +1,8 @@
 const usersModel = require('../models/users.model')
 const argon = require('argon2')
 const jwt = require('jsonwebtoken')
-
+const db = require('../lib/db.lib')
+const walletModel = require('../models/wallet.model')
 const handleErr = require('../helpers/utils')
 
 exports.login = async (req,res) => {
@@ -40,6 +41,7 @@ exports.login = async (req,res) => {
 
 exports.register = async (req, res)=>{
   try{
+
     if(req.body.password){
       req.body.password = await argon.hash(req.body.password)
     }
@@ -53,6 +55,9 @@ exports.register = async (req, res)=>{
     }
 
     const user = await usersModel.insert(col, values)
+    const {id} = user
+    // console.log(id)
+    await walletModel.insert(id)
     if(user){
       return res.json({
         success: true,
