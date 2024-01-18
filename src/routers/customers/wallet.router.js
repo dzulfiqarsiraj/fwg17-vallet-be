@@ -1,7 +1,7 @@
-const wallet = require("express").Router()
+const walletRouter = require("express").Router()
 
-// controller
+const walletController = require('../../controllers/customers/wallet.controller')
 
-// end point
+walletRouter.get('/:id', walletController.getDetailWallet)
 
-module.exports = wallet
+module.exports = walletRouter
