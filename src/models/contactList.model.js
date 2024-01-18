@@ -91,7 +91,7 @@ exports.countAll = async ()=>{
 // CUSTOMER
 exports.allContactListforCustomer = async(id, search) => {
   const sql = `
-  SELECT "u"."id" as "userId", "u"."picture", "u"."fullName", "u"."phoneNumber", "cl"."isFavorite"
+  SELECT "u"."id" as "userId", "u"."picture", "u"."fullName", "u"."phoneNumber", "cl"."isFavorite" 
   FROM "contactList" "cl"
   INNER JOIN "users" "u" ON "u"."id" = "cl"."contactId"
   WHERE "userId"=$1 AND "u"."fullName" ILIKE $2
