@@ -32,17 +32,17 @@ exports.findOneByUserId = async(id) => {
   return rows[0]
 }
 
-exports.insert = async (data) => {
+exports.insert = async (id) => {
   
   const sql = 
   `
   INSERT INTO "wallet"
   ("userId","balance")
   VALUES
-  ($1, $2)
+  ($1, ${0})
   RETURNING *
   `
-  const values = [data.userId, data.balance]
+  const values = [id]
   const {rows} = await db.query(sql, values)
   return rows[0]
 }
