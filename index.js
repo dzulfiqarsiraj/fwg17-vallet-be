@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 app.use('/', require('./src/routers/index'))
 
 // Respons bila link yg input tidak ada
-app.use('/', (reg, res)=>{
+app.use('/', (req, res)=>{
     res.status(404)
     res.send('<h1>404</h1>')
 })
