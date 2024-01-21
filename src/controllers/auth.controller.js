@@ -1,5 +1,6 @@
 const usersModel = require('../models/users.model')
 const forgotModel = require('../models/forgotPassword.model')
+const forgotPin = require('../models/forgotPin.model')
 const argon = require('argon2')
 const jwt = require('jsonwebtoken')
 const db = require('../lib/db.lib')
@@ -61,7 +62,6 @@ exports.register = async (req, res)=>{
 
     const user = await usersModel.insert(col, values)
     const {id} = user
-    // console.log(id)
     await walletModel.insert(id)
     if(user){
       return res.json({
@@ -150,7 +150,6 @@ exports.forgotPassword = async (req, res) => {
         const {customAlphabet}  = await import('nanoid')
         const rand = customAlphabet('1234567890', 6)
         const otp = rand()
-        console.log(otp)
 
         const request = await forgotModel.insert({
           otp,
@@ -194,7 +193,72 @@ exports.forgotPassword = async (req, res) => {
 
         return res.json({
           success: true,
-          message: "New password saved"
+          message: "New Password Saved"
+        })
+      }
+    }
+
+  } catch (err) {
+    console.error(err)
+    handleErr.outError(err, res)
+  }
+}
+
+
+exports.forgotPin = async (req, res) => {
+  try {
+    const {email, otp, newPin, confirmPin} = req.body
+
+    if(email){
+      const user = await usersModel.findOneByEmail(email)
+      if(user){
+        const {customAlphabet}  = await import('nanoid')
+        const rand = customAlphabet('1234567890', 6)
+        const otp = rand()
+
+        const request = await forgotPin.insert({
+          otp,
+          email: user.email,
+          userId: user.userId
+        })
+
+        // logic untuk mengirimkan otp ke email ...
+
+        return res.json({
+          success: true,
+          message: `Forgot Pin for ${request.email} requested, please check your email`
+        })
+      }
+       throw 'email not registered'
+    }else{
+      if(otp){
+        const found = await forgotPin.findOnebyOtp(otp)
+        if(!found){
+          throw 'wrong otp'
+        }
+        // logic untuk melakukan check expired otp
+        // cratedAt + 15 > date.now then throw 'expired_otp'
+
+        const user = await usersModel.findOneByEmail(found.email)
+
+        if(newPin !== confirmPin){
+          throw 'Confirm pin does not match'
+        }
+
+        const hash = await argon.hash(newPin)
+        const update = await usersModel.updateProfile(user.userId, {
+          pin: hash
+        })
+
+        if(!update){
+          throw 'create new pin failed, try again!'
+        }
+
+        await forgotPin.delete(found.id)
+
+        return res.json({
+          success: true,
+          message: "New Pin Saved"
         })
       }
     }
