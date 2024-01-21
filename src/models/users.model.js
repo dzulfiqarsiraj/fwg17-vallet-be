@@ -63,6 +63,15 @@ exports.findOneByEmail = async (email)=>{
   return rows[0]
 }
 
+exports.findOneByPhoneNumber = async (phoneNumber)=>{
+  const sql = `select "id" as "userId", "fullName", "phoneNumber", "picture"
+  from "users"
+  where "phoneNumber" = $1`
+  const values = [phoneNumber]
+  const {rows} = await db.query(sql,values)
+  return rows[0]
+}
+
 exports.insert = async (colName, colValues)=>{
   const col = []
   const values = []
