@@ -23,7 +23,7 @@ exports.allHistoryTransactions = async(id, filter, page, limits) => {
     FROM "transfer" "t"
     INNER JOIN "users" "u1" ON "u1"."id" = "t"."senderId"
     INNER JOIN "users" "u2" ON "u2"."id" = "t"."recipientId"
-    WHERE ("t"."senderId"=$1 OR "t"."recipientId"=$1) AND ("u1"."fullName" ILIKE $2 OR "u2"."fullName" ILIKE $2 OR "u1"."phoneNumber" ILIKE $2 OR "u2"."phoneNumber" ILIKE $2)
+    WHERE ("t"."senderId"=$1 OR "t"."recipientId"=$1) AND (("u1"."fullName" ILIKE $2 OR "u2"."fullName" ILIKE $2) OR ("u1"."phoneNumber" ILIKE $2 OR "u2"."phoneNumber" ILIKE $2))
     ORDER BY "t"."id" DESC
     LIMIT ${limits}
     OFFSET ${offset}
@@ -40,7 +40,7 @@ exports.countData = async(id, filter) => {
     FROM "transfer" "t"
     INNER JOIN "users" "u1" ON "u1"."id" = "t"."senderId"
     INNER JOIN "users" "u2" ON "u2"."id" = "t"."recipientId"
-    WHERE ("t"."senderId"=$1 OR "t"."recipientId"=$1) AND ("u1"."fullName" ILIKE $2 OR "u2"."fullName" ILIKE $2 OR "u1"."phoneNumber" ILIKE $2 OR "u2"."phoneNumber" ILIKE $2)
+    WHERE ("t"."senderId"=$1 OR "t"."recipientId"=$1) AND (("u1"."fullName" ILIKE $2 OR "u2"."fullName" ILIKE $2) OR ("u1"."phoneNumber" ILIKE $2 OR "u2"."phoneNumber" ILIKE $2))
     `
     const values = [id, `%${filter}%`]
     const { rows } = await db.query(sql, values)
