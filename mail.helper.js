@@ -2,11 +2,11 @@ const nodemailer = require('nodemailer');
 const {google} = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 
-const GMAIL_EMAIL_ADDRESS = 'vallet.digital.app@gmail.com'; // masukkan email yang digunakan pada GCC
-const GMAIL_CLIENT_ID = '1012811543894-96tadh19tare80oul5s2cc6f8taq0b7m.apps.googleusercontent.com'; // masukkan client id disini
-const GMAIL_CLIENT_SECRET = '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'; // masukkan client secret disini
-const GMAIL_REFRESH_TOKEN = '1//04UhEawfvBZfJCgYIARAAGAQSNwF-L9Irh40BhFoki4dgP3MLMmYR-BUlkuNxfkLzlZorbeOCcj4FuJrJCE7RXl7XhssVEyoL10w'; // masukkan refresh token disini
-const GMAIL_CALLBACK_URI = 'https://developers.google.com/oauthplayground';
+const GMAIL_EMAIL_ADDRESS = process.env.GMAIL_EMAIL_ADDRESS;
+const GMAIL_CLIENT_ID = process.env.GMAIL_CLIENT_ID;
+const GMAIL_CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET
+const GMAIL_REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN
+const GMAIL_CALLBACK_URI = process.env.GMAIL_CALLBACK_URI;
 
 const oauth2Client = new OAuth2(
   GMAIL_CLIENT_ID,
