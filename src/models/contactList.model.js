@@ -100,3 +100,11 @@ exports.allContactListforCustomer = async(id, search) => {
   const {rows} = await db.query(sql,values)
   return rows
 }
+
+exports.findOneTransferDetail = async (id)=>{
+  const sql = `SELECT "fullName", "phoneNumber", "isVerified", "id", "picture"
+  FROM "users" WHERE "id" = $1`
+  const values = [id]
+  const {rows} = await db.query(sql,values)
+  return rows[0]
+}

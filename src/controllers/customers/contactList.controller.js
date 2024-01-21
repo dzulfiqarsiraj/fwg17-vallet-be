@@ -1,27 +1,27 @@
 const contactListModel = require('../../models/contactList.model')
 const userModel = require('../../models/users.model')
-
+const errorHandler = require('../../helpers/utils')
 
 // hendle semua error yg terjadi di catch
 const handleErr = require("../../helpers/utils")
 
 
 // SELECT *
-exports.getAllData = async(req, res) => {
-    try{
+exports.getAllData = async (req, res) => {
+    try {
         let getContactList
-        if(req.query.phoneNumber){
-            
+        if (req.query.phoneNumber) {
+
             const phoneNumber = req.query.phoneNumber
             getContactList = await userModel.findOneByPhoneNumber(phoneNumber)
-        }else{
+        } else {
 
-            const {id} = req.user
-            const { search='' } = req.query
+            const { id } = req.user
+            const { search = '' } = req.query
             getContactList = await contactListModel.allContactListforCustomer(id, search)
         }
-        if(getContactList.length < 1){
-            throw ({code: "THROW", message: "No Data!"})
+        if (getContactList.length < 1) {
+            throw ({ code: "THROW", message: "No Data!" })
         }
         console.log(req.query.phoneNumber)
 
@@ -31,7 +31,31 @@ exports.getAllData = async(req, res) => {
             results: getContactList
         })
 
-    } catch(err){
+    } catch (err) {
         handleErr.outError(err, res)
     }
+}
+
+exports.getDetailTransfer = async (req, res) => {
+    try {
+        const id = Number(req.params.id)
+        const contactList = await contactListModel.findOneTransferDetail(id)
+
+        if (!contactList) {
+            return res.status(404).json({
+                success: false,
+                message: `contactList not found`,
+            })
+        }
+
+        return res.json({
+            success: true,
+            message: `Detail contactList`,
+            results: contactList
+        })
+
+    } catch (err) {
+        errorHandler.outError(err, res)
+    }
+
 }
