@@ -6,5 +6,6 @@ authRouter.use('/login', authController.login)
 authRouter.use('/register', authController.register)
 authRouter.use('/transfer/:id', authController.verifyPin)
 authRouter.use('/verify-password/:id', authController.verifyPassword)
+authRouter.post('/forgot-password', authController.forgotPassword)
 
 module.exports = authRouter

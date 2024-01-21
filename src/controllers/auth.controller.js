@@ -1,4 +1,5 @@
 const usersModel = require('../models/users.model')
+const forgotModel = require('../models/forgotPassword.model')
 const argon = require('argon2')
 const jwt = require('jsonwebtoken')
 const db = require('../lib/db.lib')
@@ -44,6 +45,10 @@ exports.register = async (req, res)=>{
 
     if(req.body.password){
       req.body.password = await argon.hash(req.body.password)
+    }
+
+    if(req.body.pin){
+      req.body.pin = await argon.hash(req.body.pin)
     }
 
     const col = []
@@ -129,6 +134,73 @@ exports.verifyPassword = async (req,res) => {
         message: 'wrong email or password'
       })
     }
+    handleErr.outError(err, res)
+  }
+}
+
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const {email, otp, newPassword, confirmPassword} = req.body
+
+    if(email){
+      const user = await usersModel.findOneByEmail(email)
+      if(user){
+        // const otp = String(Math.round(Math.random() * 100000)).padEnd(6, '0')
+        const {customAlphabet}  = await import('nanoid')
+        const rand = customAlphabet('1234567890', 6)
+        const otp = rand()
+        console.log(otp)
+
+        const request = await forgotModel.insert({
+          otp,
+          email: user.email,
+          userId: user.userId
+        })
+
+        // logic untuk mengirimkan otp ke email ...
+
+        return res.json({
+          success: true,
+          message: `Forgot Password for ${request.email} requested, please check your email`
+        })
+      }
+       throw 'email not registered'
+    }else{
+      if(otp){
+        const found = await forgotModel.findOnebyOtp(otp)
+        if(!found){
+          throw 'wrong otp'
+        }
+        // logic untuk melakukan check expired otp
+        // cratedAt + 15 > date.now then throw 'expired_otp'
+
+        const user = await usersModel.findOneByEmail(found.email)
+
+        if(newPassword !== confirmPassword){
+          throw 'Confirm password does not match'
+        }
+
+        const hash = await argon.hash(newPassword)
+        const update = await usersModel.updateProfile(user.userId, {
+          password: hash
+        })
+
+        if(!update){
+          throw 'create new password failed, try again!'
+        }
+
+        await forgotModel.delete(found.id)
+
+        return res.json({
+          success: true,
+          message: "New password saved"
+        })
+      }
+    }
+
+  } catch (err) {
+    console.error(err)
     handleErr.outError(err, res)
   }
 }
