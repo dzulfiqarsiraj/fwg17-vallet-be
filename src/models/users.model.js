@@ -122,7 +122,7 @@ exports.updateProfile = async (id, data) => {
     const values = []
     values.push(id)
     for(let item in data){
-        if(data[item]) {
+        if(data[item] || item == 'picture') {
             values.push(data[item])
             column.push(`"${item}"=$${values.length}`)
         }

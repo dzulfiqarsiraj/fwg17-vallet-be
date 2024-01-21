@@ -1,3 +1,4 @@
+const db = require('../../lib/db.lib')
 const usersModel = require('../../models/users.model')
 const argon = require('argon2')
 const errorHandler = require('../../helpers/utils')
@@ -31,7 +32,7 @@ exports.getProfile = async (req, res) => {
 
 }
 
-exports.updateProfile = (req, res) => {
+exports.updateProfile = async (req, res) => {
 	upload(req, res, async(err) => {
     try{
       if(err) {
@@ -43,12 +44,26 @@ exports.updateProfile = (req, res) => {
       // }
 
       const {id} = req.user
+      if(req.body.picture == 'null'){
+        req.body.picture = null
+
+        const checkUsersData = await usersModel.findOne(id)
+        if(checkUsersData.picture){
+          const savedPicture = path.join(global.path, 'uploads', 'profiles', checkUsersData.picture)
+
+          fs.access(savedPicture, fs.constants.R_OK).then(() => {
+            fs.rm(savedPicture)
+          }).catch(()=>{})
+        }
+      }
+
       if(req.file){
         const checkUsersData = await usersModel.findOne(id)
         if(checkUsersData.picture){
           const savedPicture = path.join(global.path, 'uploads', 'profiles', checkUsersData.picture)
-          fs.access(savedPicture, fs.constants.R_OK)
-          await fs.rm(savedPicture)
+          fs.access(savedPicture, fs.constants.R_OK).then(() => {
+            fs.rm(savedPicture)
+          }).catch(()=>{})
         }
         req.body.picture = req.file.filename
       }
@@ -57,7 +72,7 @@ exports.updateProfile = (req, res) => {
 
       return res.json({
         success: true,
-        message: 'Update Payment Method Successfully',
+        message: 'Update profile Successfully',
         results: updateUsers
       })
     }catch(err){
