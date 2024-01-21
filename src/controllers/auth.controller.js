@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const db = require('../lib/db.lib')
 const walletModel = require('../models/wallet.model')
 const handleErr = require('../helpers/utils')
+const transport = require('../../mail.helper')
 
 exports.login = async (req,res) => {
   try{
@@ -146,23 +147,48 @@ exports.forgotPassword = async (req, res) => {
     if(email){
       const user = await usersModel.findOneByEmail(email)
       if(user){
-        // const otp = String(Math.round(Math.random() * 100000)).padEnd(6, '0')
-        const {customAlphabet}  = await import('nanoid')
-        const rand = customAlphabet('1234567890', 6)
-        const otp = rand()
+        const { customAlphabet } = await import("nanoid");
+        const rand = customAlphabet("1234567890", 6);
+        const otp = rand();
 
         const request = await forgotModel.insert({
           otp,
           email: user.email,
-          userId: user.userId
-        })
+          userId: user.userId,
+        });
 
-        // logic untuk mengirimkan otp ke email ...
+        //nodemailer start
+        const mailOptions = {
+          from: "vallet.digital.app@gmail.com",
+          to: request.email,
+          subject: `Ini adalah Kode OTP anda ${otp}`,
+          html:`
+          <div>
+            <p>Masukan kode 6 digit di bawah ini untuk membuat password baru dan mendapatkan kembali akses ke akun Vallet anda</p>
+            <p>${otp}</p>
+            <p>Terima kasih telah membantu kami menjaga keamanan akun Anda.</p>
+            <p>Tim Vallet</p>
+          </div>`,
+        }
+
+        const sendMail = async () => {
+          try {
+            const mailer = await transport();
+            await mailer.sendMail(mailOptions);
+            console.log("Email terkirim!");
+          } catch (err) {
+            console.log(err);
+            console.log("Gagal!");
+          }
+        };
+
+        sendMail();
+        //nodemailer end
 
         return res.json({
           success: true,
-          message: `Forgot Password for ${request.email} requested, please check your email`
-        })
+          message: `Forgot Password for ${request.email} requested, please check your email`,
+        });
       }
        throw 'email not registered'
     }else{
@@ -212,22 +238,48 @@ exports.forgotPin = async (req, res) => {
     if(email){
       const user = await usersModel.findOneByEmail(email)
       if(user){
-        const {customAlphabet}  = await import('nanoid')
-        const rand = customAlphabet('1234567890', 6)
-        const otp = rand()
+        const { customAlphabet } = await import("nanoid");
+        const rand = customAlphabet("1234567890", 6);
+        const otp = rand();
 
         const request = await forgotPin.insert({
           otp,
           email: user.email,
-          userId: user.userId
-        })
+          userId: user.userId,
+        });
 
-        // logic untuk mengirimkan otp ke email ...
+        //nodemailer start
+        const mailOptions = {
+          from: "vallet.digital.app@gmail.com",
+          to: request.email,
+          subject: `Ini adalah Kode OTP anda ${otp}`,
+          html: `
+                  <div>
+                    <p>Masukan kode 6 digit di bawah ini untuk membuat pin baru dan mendapatkan kembali akses ke berbagai feature di akun Vallet anda</p>
+                    <p>${otp}</p>
+                    <p>Terima kasih telah membantu kami menjaga keamanan akun Anda.</p>
+                    <p>Tim Vallet</p>
+                  </div>`,
+        };
+
+        const sendMail = async () => {
+          try {
+            const mailer = await transport();
+            await mailer.sendMail(mailOptions);
+            console.log("Email terkirim!");
+          } catch (err) {
+            console.log(err);
+            console.log("Gagal!");
+          }
+        };
+
+        sendMail();
+        //nodemailer end
 
         return res.json({
           success: true,
-          message: `Forgot Pin for ${request.email} requested, please check your email`
-        })
+          message: `Forgot Pin for ${request.email} requested, please check your email`,
+        });
       }
        throw 'email not registered'
     }else{
