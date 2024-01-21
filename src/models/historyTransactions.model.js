@@ -22,6 +22,7 @@ exports.allHistoryTransactions = async(id) => {
     INNER JOIN "users" "u1" ON "u1"."id" = "t"."senderId"
     INNER JOIN "users" "u2" ON "u2"."id" = "t"."recipientId"
     WHERE "t"."senderId"=$1 OR "t"."recipientId"=$1
+    ORDER BY "t"."id"
     `;
     const values = [id]
     const {rows} = await db.query(sql,values)
