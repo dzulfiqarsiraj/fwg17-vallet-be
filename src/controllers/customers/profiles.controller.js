@@ -39,6 +39,11 @@ exports.updateProfile = async (req, res) => {
         throw err
       }
 
+      
+    if(req.body.pin){
+      req.body.pin = await argon.hash(req.body.pin)
+    }
+
       // if(req.body.password) {
       //   req.body.password = await argon.hash(req.body.password)
       // }
