@@ -5,6 +5,7 @@ const contactListController = require('../../controllers/customers/contactList.c
 
 // end point
 contactListRouter.get('/', contactListController.getAllData)
+contactListRouter.get('/:id', contactListController.getOneData)
 contactListRouter.get('/:id', contactListController.getDetailTransfer)
 
 module.exports = contactListRouter
