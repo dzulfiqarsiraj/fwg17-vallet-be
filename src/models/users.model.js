@@ -60,15 +60,22 @@ exports.findOneByEmail = async (email)=>{
   where "email" = $1`
   const values = [email]
   const {rows} = await db.query(sql,values)
+  if(!rows.length){
+    throw new Error("email not registered")
+  }
   return rows[0]
 }
 
-exports.findOneByPhoneNumber = async (phoneNumber)=>{
-  const sql = `select "id" as "userId", "fullName", "phoneNumber", "picture"
+exports.findOneByPhone = async (phoneNumber)=>{
+  const sql = `select "users"."id" as "userId", "email", "password", "roleId", "name" as "roleName"
   from "users"
+  join "roles" "r" on "users"."roleId" = "r"."id"
   where "phoneNumber" = $1`
   const values = [phoneNumber]
   const {rows} = await db.query(sql,values)
+  if(!rows.length){
+    throw new Error("phone number is already exist")
+  }
   return rows[0]
 }
 
@@ -80,7 +87,6 @@ exports.insert = async (colName, colValues)=>{
   for(let i = 0; i < colName.length; i++){
     col.push(colName[i])
     values.push(colValues[i])
-
     dollar.push(`$${values.length}`)
   }
 

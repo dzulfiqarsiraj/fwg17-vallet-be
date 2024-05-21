@@ -22,16 +22,19 @@ exports.findAll = async (sortBy='id', order, page=1)=>{
   FROM "contactList"
   LIMIT ${limit} OFFSET ${offset}
   `
-  const values = []
-  const {rows} = await db.query(sql,values)
+  const {rows} = await db.query(sql)
   return rows
 }
 
 exports.findOne = async (id)=>{
+  console.log(id)
   const sql = `SELECT *
-  FROM "contactList" WHERE "id" = $1`
+  FROM "users" WHERE "id" = $1`
   const values = [id]
   const {rows} = await db.query(sql,values)
+  if(!rows.length){
+    throw ("user not found")
+  }
   return rows[0]
 }
 
@@ -82,14 +85,14 @@ exports.countAll = async ()=>{
   const sql = `SELECT count(id) AS counts 
   FROM "contactList"
   `
-  const values = []
-  const {rows} = await db.query(sql,values)
+  const {rows} = await db.query(sql)
+  console.log(rows)
   return rows[0].counts
 }
 
 
 // CUSTOMER
-exports.allContactListforCustomer = async(id, search) => {
+exports.allContactListforCustomer = async(id, search, limit, offset, page) => {
   const sql = `
   SELECT "u"."id" as "userId", "u"."picture", "u"."fullName", "u"."phoneNumber", "cl"."isFavorite" 
   FROM "contactList" "cl"
@@ -99,6 +102,35 @@ exports.allContactListforCustomer = async(id, search) => {
   const values = [id, `%${search}%`]
   const {rows} = await db.query(sql,values)
   return rows
+}
+
+
+
+exports.findByPhoneNumber = async (phoneNumber, limit, offset)=>{
+  const sql = `
+  select "id" as "userId", "fullName", "phoneNumber", "picture"
+  from "users"
+  where "phoneNumber" LIKE $1
+  limit ${limit} offset ${offset}
+  `
+  const values = ["%"+phoneNumber+"%"]
+  const {rows} = await db.query(sql,values)
+  if(!rows.length){
+    throw new Error("no data found")
+  }
+  return rows
+}
+
+
+exports.countAllByPhoneNumber = async (phoneNumber)=>{
+  const sql = `SELECT count(id) AS count
+  FROM "users"
+  WHERE "phoneNumber" LIKE $1
+  `
+  const values = [`%${phoneNumber}%`]
+  const {rows} = await db.query(sql,values)
+  console.log(rows)
+  return rows[0].count
 }
 
 exports.findOneTransferDetail = async (id)=>{
