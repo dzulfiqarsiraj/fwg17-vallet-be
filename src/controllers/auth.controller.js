@@ -1,12 +1,10 @@
 const usersModel = require('../models/users.model')
-const forgotModel = require('../models/forgotPassword.model')
-const forgotPin = require('../models/forgotPin.model')
+const otpModel = require('../models/otp.model')
 const argon = require('argon2')
 const jwt = require('jsonwebtoken')
-const db = require('../lib/db.lib')
 const walletModel = require('../models/wallet.model')
 const handleErr = require('../helpers/utils')
-const transport = require('../../mail.helper')
+const transporter = require('../lib/mail.lib')
 
 exports.login = async (req,res) => {
   try{
@@ -17,6 +15,7 @@ exports.login = async (req,res) => {
       id: user.userId,
       role: user.roleName
     }, process.env.APP_SECRET || 'secret')
+
     if(password){
       return res.json({
         success: true,
@@ -26,18 +25,14 @@ exports.login = async (req,res) => {
         }
       })
     }else{
-      throw 'wrong_password'
+      throw 'wrong password!'
     }
+
   }else{
-    throw 'wrong_password'
+    throw 'Email not registered!'
   }
+
   }catch(err){
-    if(err === 'wrong_password'){
-      return res.status(401).json({
-        success: false,
-        message: 'wrong email or password'
-      })
-    }
     handleErr.outError(err, res)
   }
 }
@@ -92,24 +87,20 @@ exports.verifyPin = async (req,res) => {
     if(pin){
       return res.json({
         success: true,
-        message: 'Transfer Success'
+        message: 'Verify Pin Success'
       })
     }else{
-      throw 'wrong_pin'
+      throw 'Incorrect Pin'
     }
+
   }else{
-    throw 'wrong_pin'
+    throw 'user not found'
   }
   }catch(err){
-    if(err === 'wrong_pin'){
-      return res.status(401).json({
-        success: false,
-        message: 'wrong email or pin'
-      })
-    }
     handleErr.outError(err, res)
   }
 }
+
 
 exports.verifyPassword = async (req,res) => {
   try{
@@ -123,18 +114,13 @@ exports.verifyPassword = async (req,res) => {
         message: 'Password Correct'
       })
     }else{
-      throw 'wrong_password'
+      throw 'wrong existing password'
     }
+
   }else{
-    throw 'wrong_password'
+    throw 'user not found'
   }
   }catch(err){
-    if(err === 'wrong_password'){
-      return res.status(401).json({
-        success: false,
-        message: 'wrong email or password'
-      })
-    }
     handleErr.outError(err, res)
   }
 }
@@ -151,7 +137,7 @@ exports.forgotPassword = async (req, res) => {
         const rand = customAlphabet("1234567890", 6);
         const otp = rand();
 
-        const request = await forgotModel.insert({
+        const request = await otpModel.insert({
           otp,
           email: user.email,
           userId: user.userId,
@@ -159,21 +145,21 @@ exports.forgotPassword = async (req, res) => {
 
         //nodemailer start
         const mailOptions = {
-          from: "vallet.digital.app@gmail.com",
+          from: 'Vallet Team <no-reply@gmail.com>',
           to: request.email,
-          subject: `Ini adalah Kode OTP anda ${otp}`,
+          subject: `Here is your OTP code ${otp}`,
           html:`
           <div>
-            <p>Masukan kode 6 digit di bawah ini untuk membuat password baru dan mendapatkan kembali akses ke akun Vallet anda</p>
+            <p>Enter the 6-digit code below to create a new password and regain access to your Vallet account</p>
             <p>${otp}</p>
-            <p>Terima kasih telah membantu kami menjaga keamanan akun Anda.</p>
-            <p>Tim Vallet</p>
+            <p>Thank you for helping us maintain the security of your account.</p>
+            <p>Vallet Team</p>
           </div>`,
         }
 
         const sendMail = async () => {
           try {
-            const mailer = await transport();
+            const mailer = await transporter();
             await mailer.sendMail(mailOptions);
             console.log("Email terkirim!");
           } catch (err) {
@@ -187,13 +173,13 @@ exports.forgotPassword = async (req, res) => {
 
         return res.json({
           success: true,
-          message: `Forgot Password for ${request.email} requested, please check your email`,
+          message: `OTP has been sent to your email`,
         });
       }
        throw 'email not registered'
     }else{
       if(otp){
-        const found = await forgotModel.findOnebyOtp(otp)
+        const found = await otpModel.findOnebyOtp(otp)
         if(!found){
           throw 'wrong otp'
         }
@@ -215,7 +201,7 @@ exports.forgotPassword = async (req, res) => {
           throw 'create new password failed, try again!'
         }
 
-        await forgotModel.delete(found.id)
+        await otpModel.delete(found.id)
 
         return res.json({
           success: true,
@@ -233,7 +219,7 @@ exports.forgotPassword = async (req, res) => {
 
 exports.forgotPin = async (req, res) => {
   try {
-    const {email, otp, newPin, confirmPin} = req.body
+    const {email, otp, newPin} = req.body
 
     if(email){
       const user = await usersModel.findOneByEmail(email)
@@ -242,7 +228,7 @@ exports.forgotPin = async (req, res) => {
         const rand = customAlphabet("1234567890", 6);
         const otp = rand();
 
-        const request = await forgotPin.insert({
+        const request = await otpModel.insert({
           otp,
           email: user.email,
           userId: user.userId,
@@ -250,21 +236,21 @@ exports.forgotPin = async (req, res) => {
 
         //nodemailer start
         const mailOptions = {
-          from: "vallet.digital.app@gmail.com",
+          from: 'Vallet Team <no-reply@gmail.com>',
           to: request.email,
-          subject: `Ini adalah Kode OTP anda ${otp}`,
+          subject: `Here is your OTP code ${otp}`,
           html: `
                   <div>
-                    <p>Masukan kode 6 digit di bawah ini untuk membuat pin baru dan mendapatkan kembali akses ke berbagai feature di akun Vallet anda</p>
+                    <p>Enter the 6-digit code below to create a new pin</p>
                     <p>${otp}</p>
-                    <p>Terima kasih telah membantu kami menjaga keamanan akun Anda.</p>
-                    <p>Tim Vallet</p>
+                    <p>Thank you for helping us maintain the security of your account.</p>
+                    <p>Vallet Team</p>
                   </div>`,
         };
 
         const sendMail = async () => {
           try {
-            const mailer = await transport();
+            const mailer = await transporter();
             await mailer.sendMail(mailOptions);
             console.log("Email terkirim!");
           } catch (err) {
@@ -278,13 +264,13 @@ exports.forgotPin = async (req, res) => {
 
         return res.json({
           success: true,
-          message: `Forgot Pin for ${request.email} requested, please check your email`,
+          message: `OTP has been sent to your email`,
         });
       }
        throw 'email not registered'
     }else{
       if(otp){
-        const found = await forgotPin.findOnebyOtp(otp)
+        const found = await otpModel.findOnebyOtp(otp)
         if(!found){
           throw 'wrong otp'
         }
@@ -293,20 +279,16 @@ exports.forgotPin = async (req, res) => {
 
         const user = await usersModel.findOneByEmail(found.email)
 
-        if(newPin !== confirmPin){
-          throw 'Confirm pin does not match'
-        }
-
-        const hash = await argon.hash(newPin)
+        const hashedPin = await argon.hash(newPin)
         const update = await usersModel.updateProfile(user.userId, {
-          pin: hash
+          pin: hashedPin
         })
 
         if(!update){
           throw 'create new pin failed, try again!'
         }
 
-        await forgotPin.delete(found.id)
+        await otpModel.delete(found.id)
 
         return res.json({
           success: true,
@@ -316,7 +298,36 @@ exports.forgotPin = async (req, res) => {
     }
 
   } catch (err) {
-    console.error(err)
     handleErr.outError(err, res)
+  }
+}
+
+
+exports.findUserByEmail = async (req, res) => {
+  try {
+    const user = await usersModel.findOneByEmail(req.query.email)
+
+    return res.json({
+      success: true,
+      message: `Detail users`,
+      results: user
+    })
+  } catch (error) {
+    handleErr.outError(error, res)
+  }
+}
+
+
+exports.findUserByPhone = async (req, res) => {
+  try {
+    const user = await usersModel.findOneByPhone(req.query.phoneNumber)
+
+    return res.json({
+      success: true,
+      message: `Detail users`,
+      results: user
+    })
+  } catch (error) {
+    handleErr.outError(error, res)
   }
 }
